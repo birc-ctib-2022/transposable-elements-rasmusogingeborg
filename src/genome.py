@@ -213,8 +213,8 @@ class ListGenome(Genome):
  
     def __len__(self) -> int:
         """Current length of the genome."""
-        len = len(self.genome)
-        return len
+        length = len(self.genome)
+        return length
 
     def __str__(self) -> str:
         """
@@ -246,7 +246,7 @@ class Nucleotide(object):
     def __str__(self): # human readable textual representation.
         return self.symbol
 
-# tjek. 
+
 class TE(object):
     def __init__(self, id, pos, seq, length, status='active'):
         self.id = id
@@ -496,7 +496,7 @@ genome.disable_te(3)
 print(genome)
 print(genome.active_tes())
 
-# make test to test if TE can be copied to a position larger than the genome.
+# test if TE can be copied to a position larger than the genome.
 # test whether start pos of TEs after an newly inserted TE are updated.
 genome2 = LinkedListGenome(20)
 genome2.insert_te(10, 10)
