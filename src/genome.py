@@ -115,9 +115,6 @@ class ListGenome(Genome):
 
         Returns a new ID for the transposable element.
         """
-        # The ID of a TE is the number of the TE. I.e., the ID of the
-        # first TE added to the genome is 1, the number of the second 
-        # TE added to the genome is 2, etc..
 
         # Get ID of TE. 
         self.number_of_TEs += 1
@@ -129,22 +126,17 @@ class ListGenome(Genome):
             te.append(('A', id))
         
         # test whether active TE in pos of genome, where the new TE is
-        # inserted. If an active TE is present, disable it.
+        # inserted.
         if self.genome[pos][0] == 'A':
             # determine TE found at pos.
             te_to_be_disabled = self.genome[pos][1] 
             # disable TE found at pos.
             self.disable_te(te_to_be_disabled)
 
-        # insert TE into genome. TE inserted directly into genome, if 
-        # the nucleotide at the start pos of the in the genome TE is 
-        # '-' or 'x'.
-        self.genome[pos:pos] = te # NB: insert() method can also be 
-        # used.
+        # insert TE into genome. 
+        self.genome[pos:pos] = te
 
         # Update dictionary for active TE and for inactive TE.
-        # In the dictionary, the key is the TE ID, and the value is a
-        # tuple, with the start pos of the TE and the length. 
         self.active_TEs[id] = (pos, length)
 
         # update start pos of active TEs found after the newly inserted
@@ -153,7 +145,7 @@ class ListGenome(Genome):
             # if the start pos of the te is found after pos, add length
             # to the start pos. 
             if self.active_TEs[te][0] > pos:
-                self.active_TEs[te][0] += length
+                self.active_TEs[te] = (self.active_TEs[te][0]+length, self.active_TEs[te][1])
         return id
 
     def copy_te(self, te: int, offset: int) -> int | None:
@@ -176,11 +168,7 @@ class ListGenome(Genome):
         length = self.active_TEs[te][1] # length_original ofc the 
         # same as length_new.
         # determine position that the copy is to be inserted at.
-        start_position_new = start_position_original + offset # FIXME
-        if start_position_new < 0:
-            start_position_new = len(self.genome) + start_position_new 
-        if start_position_new > len(self.genome):
-            start_position = start_position_new - len(self.genome)
+        start_position_new = (start_position_original + offset)%len(self.genome)
         # insert copy. 
         id_new = self.insert_te(start_position_new, length)
         return id_new
@@ -202,7 +190,6 @@ class ListGenome(Genome):
         for n in range(start_pos_of_te, start_pos_of_te+length_of_te):
             self.genome[n] = ('x', id) # n is a tuple: (nucleotide, id)
 
-        # The integer te gives the id of a te. 
         if te in self.active_TEs:
             self.inactive_TEs[te] = self.active_TEs.pop(te)
 
@@ -467,6 +454,7 @@ class LinkedListGenome(Genome):
         """
         return repr(self.genome)
 
+
 print('linked list genome')
 genome = LinkedListGenome(20) 
 print(genome)
@@ -512,3 +500,47 @@ genome2.insert_te(0, 10)
 print(genome2)
 print(genome2.tes[0].pos)
 print(genome2.tes[1].pos) 
+
+print('list genome')
+genome = ListGenome(20) 
+print(genome)
+print(genome.active_tes())
+
+genome.insert_te(5, 10) # 
+print(genome)
+print(genome.active_tes()) # [1]
+
+genome.insert_te(10, 10)
+print(genome)
+print(genome.active_tes()) 
+
+genome.copy_te(2, 20)
+print(genome)
+print(genome.active_tes())
+
+genome.copy_te(2, -15)
+print(genome)
+print(genome.active_tes())
+
+genome.insert_te(50, 10)
+print(genome)
+print(genome.active_tes())
+
+genome.disable_te(3)
+print(genome)
+print(genome.active_tes())
+
+# test if TE can be copied to a position larger than the genome.
+# test whether start pos of TEs after an newly inserted TE are updated.
+genome2 = ListGenome(20)
+genome2.insert_te(10, 10)
+print(genome2)
+print(genome2.active_tes())
+
+genome2.copy_te(1, 22)
+print(genome2) 
+print(genome2.active_tes())
+
+genome2.insert_te(0, 10)
+print(genome2)
+print(genome2.active_tes())
