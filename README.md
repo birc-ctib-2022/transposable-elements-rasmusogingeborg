@@ -100,6 +100,28 @@ You are free to implement the genome classes however you want, and using whateer
 
 When you have implemented the two (or more) classes, describe the complexity of each operation as a function of the genome size (at the time of the operation), and the size of the TE involved (and when copying, the offset you are copying). Put the description here:
 
-**FIXME: OPERATION COMPLEXITY**
+n: længde af genom
+m: længde af te.
+a: længde af active_tes liste
+t: længde af self.tes liste
+
+ListGenome:
+init: O(n), da vi laver en liste med længden n. 
+insert_te: O(m+a), da det tager O(m) at danne et nyt TE og O(a) at opdatere start-positionen af de aktive TEs. Det kan variere, om a eller m er størst, hvorfor begge er taget med.
+copy_te: O(m+a), da insert_te bruges og de øvrige operationer er O(1).
+disable_te: O(m) til at ændre symbolet for m nucleotider i genomet.
+active_tes: O(a) til at danne en liste med a elementer. 
+len: O(1) for at få længden af en liste.
+str: O(n) for at iterere over alle nucleotider i genomet. 
+
+LinkedListGenome:
+init: O(n), for at danne en DoublyLinkedList med n elementer.
+insert_te: O(m*n) for at ændre m symboler i genomet med en O(n) operation i form af set_at_index (der kalder get_element_at_index). 
+copy_te: O(m*n) da insert_te bruges og alle de øvrige operationer er O(1).
+disable_te: O(m*n) for at ændre m symboler i genomet med en O(n) operation i form af set_at_index (der kalder get_element_at_index).
+active_tes: O(t) for at iterere over self.tes listen. 
+len: O(n) for at iterere over hele genomet. 
+str: O(n) for at iterere over hele genomet. 
+
 
 In `src/simulate.py` you will find a program that can run simulations and tell you actual time it takes to simulate with different implementations. You can use it to test your analysis. You can modify the parameters to the simulator if you want to explore how they affect the running time.
